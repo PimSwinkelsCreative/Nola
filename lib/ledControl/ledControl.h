@@ -7,31 +7,20 @@
 #define N_LEDS 6
 #define LED_RESOLUTION 16
 
-// define a struct that can be used to pass the parameters to the animation tasks:
-struct animationStruct {
-    RGBWColor primaryColor;
-    RGBWColor secondaryColor;
-    uint16_t fadeTime;
-};
-
 void setupLeds();
 
-void setAllLedsTo(RGBWColor color);
+void setAllLedsTo(RGBWColor16 color);
 
-void setLedTarget(uint8_t index, RGBWColor color);
-
-void updateLeds();
-
-RGBWColor remapColor(RGBWColor color);
+void setLedTarget(uint8_t index, RGBWColor16 color);
 
 void updateLeds();
 
-void startFadeAnimation(RGBWColor color, uint16_t fadeTime);
+RGBWColor16 remapColor(RGBWColor16 color);
 
-void updateFade(void * parameter);
+void updateLeds();
 
-RGBWColor dimColor(RGBWColor color, float brightness);
+RGBWColor16 dimColor(RGBWColor16 color, float brightness);
 
-RGBWColor fadeColor(RGBWColor startColor, RGBWColor endColor, float fadeProgress);
+RGBWColor16 fadeColor(RGBWColor16 startColor, RGBWColor16 endColor, float fadeProgress);
 
-RGBWColor changeWhiteLevel(RGBWColor color, float saturationMultiplier);
+RGBWColor16 changeWhiteLevel(RGBWColor16 color, float saturationMultiplier);
