@@ -24,13 +24,13 @@ void setupLeds()
 {
     ledDriver.setAllLedsTo(RGBWColor16({ 0, 0, 0, 0 }));
     ledDriver.update();
-    ledDriver.update(); // for some reason update needs to be done twice??
 }
 
 void setAllLedsTo(RGBWColor16 color)
 {
-    Serial.println("R: "+String(color.r)+"\tG: "+String(color.g)+"\tB: "+String(color.b)+"\tW: "+String(color.w));
-    ledDriver.setAllLedsTo(remapColor(color));
+    // color = RGBWColor({0,0,0,65535});
+    color = remapColor(color);
+    ledDriver.setAllLedsTo(color);
 }
 
 void setLedTarget(uint8_t index, RGBWColor16 color)
@@ -42,6 +42,7 @@ void updateLeds()
 {
     ledDriver.update();
 }
+
 
 RGBWColor16 dimColor(RGBWColor16 color, float brightness)
 {
