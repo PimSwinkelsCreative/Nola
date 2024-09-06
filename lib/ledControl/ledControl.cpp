@@ -24,13 +24,13 @@ void setupLeds()
 {
     ledDriver.setAllLedsTo(RGBWColor({ 0, 0, 0, 0 }));
     ledDriver.update();
-    ledDriver.update(); // for some reason update needs to be done twice??
 }
 
 void setAllLedsTo(RGBWColor color)
 {
-    Serial.println("R: "+String(color.r)+"\tG: "+String(color.g)+"\tB: "+String(color.b)+"\tW: "+String(color.w));
-    ledDriver.setAllLedsTo(remapColor(color));
+    // color = RGBWColor({0,0,0,65535});
+    color = remapColor(color);
+    ledDriver.setAllLedsTo(color);
 }
 
 void setLedTarget(uint8_t index, RGBWColor color)
@@ -43,50 +43,55 @@ void updateLeds()
     ledDriver.update();
 }
 
-void startFadeAnimation(RGBWColor color, uint16_t fadeTime)
-{
-    currentAnimation = 1;
+// void startFadeAnimation(RGBWColor color, uint16_t fadeTime)
+// {
+//     currentAnimation = 1;
 
-    static animationStruct fadeInfo;
-    fadeInfo.primaryColor = color;
-    fadeInfo.fadeTime = fadeTime;
+//     static animationStruct fadeInfo;
+//     fadeInfo.primaryColor = color;
+//     fadeInfo.fadeTime = fadeTime;
 
-    xTaskCreatePinnedToCore(
-        updateFade, /* Function to implement the task */
-        "updateFadeTask", /* Name of the task */
-        10000, /* Stack size in words */
-        (void*) &fadeInfo, /* Task input parameter */
-        0, /* Priority of the task */
-        &updateFadeTask, /* Task handle. */
-        0); /* Core where the task should run */
-}
+//     xTaskCreatePinnedToCore(
+//         updateFade, /* Function to implement the task */
+//         "updateFadeTask", /* Name of the task */
+//         10000, /* Stack size in words */
+//         (void*) &fadeInfo, /* Task input parameter */
+//         0, /* Priority of the task */
+//         &updateFadeTask, /* Task handle. */
+//         0); /* Core where the task should run */
+// }
 
-void updateFade(void * parameter)
-{
-    animationStruct *fadeInfo = (animationStruct*)parameter;
+// void updateFade(void * parameter)
+// {
+//     animationStruct *fadeInfo = (animationStruct*)parameter;
 
-    RGBWColor fadeColor = fadeInfo->primaryColor;
-    uint16_t fadeTime = fadeInfo->fadeTime;
-    unsigned long animationStartTime = millis();
-    unsigned long lastFrame = millis();
-    while (currentAnimation == 1) {
-        if (millis() - lastFrame >= (1000 / framesPerSecond)) {
-            lastFrame = millis();
-            float brightness;
-            uint16_t currentFadeTime = (millis() - animationStartTime) % fadeTime;
-            if (currentFadeTime < fadeTime / 2) {
-                brightness = 2.0 * float(currentFadeTime) / float(fadeTime);
-            } else {
-                brightness = 2.0 * float(fadeTime - currentFadeTime) / float(fadeTime);
-            }
-            setAllLedsTo(dimColor(fadeColor, brightness));
-            updateLeds();
-            vTaskDelay(1);
-        }
-    }
-    setAllLedsTo(RGBWColor({ 0, 0, 0, 0 }));
-    updateLeds();
-    vTaskDelete(NULL); // terminate and delete the task
+//     RGBWColor fadeColor = fadeInfo->primaryColor;
+//     uint16_t fadeTime = fadeInfo->fadeTime;
+//     unsigned long animationStartTime = millis();
+//     unsigned long lastFrame = millis();
+//     while (currentAnimation == 1) {
+//         if (millis() - lastFrame >= (1000 / framesPerSecond)) {
+//             lastFrame = millis();
+//             float brightness;
+//             uint16_t currentFadeTime = (millis() - animationStartTime) % fadeTime;
+//             if (currentFadeTime < fadeTime / 2) {
+//                 brightness = 2.0 * float(currentFadeTime) / float(fadeTime);
+//             } else {
+//                 brightness = 2.0 * float(fadeTime - currentFadeTime) / float(fadeTime);
+//             }
+//             setAllLedsTo(dimColor(fadeColor, brightness));
+//             updateLeds();
+//             vTaskDelay(1);
+//         }
+//     }
+//     setAllLedsTo(RGBWColor({ 0, 0, 0, 0 }));
+//     updateLeds();
+//     vTaskDelete(NULL); // terminate and delete the task
+// }
+
+
+void startFadeAnimation(RGBWColor color, uint16_t fadeTime){
+
 }
 
 RGBWColor dimColor(RGBWColor color, float brightness)
