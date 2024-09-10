@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <dipswitches.h>
 
+#include "dipswitches.h"
 #include "ledControl.h"
 
 // timing:
@@ -16,47 +16,65 @@ uint8_t config, address;
 
 // timing and stating
 unsigned long lastLedupdate = 0;
-unsigned int ledUpdateInterval = 100;
+unsigned int ledUpdateInterval = 20;
 
-void setup()
-{
+void setup() {
+  delay(3000);
+  // start the serial monitor
+  Serial.begin(115200);
 
-    delay(3000);
-    // start the serial monitor
-    Serial.begin(115200);
+  // setup the leds
+  setupLeds();
 
-    // setup the leds
-    setupLeds();
+  // setAllLedsTo(RGBWColor16( 65535, 0, 0, 0 ));
+  // updateLeds();
+  // delay(5000);
 
-    setAllLedsTo(RGBWColor({ 65535, 0, 0, 0 }));
-    updateLeds();
-    delay(5000);
+  // setup the dipswitches
+  setupDipswitches();
 
-    // setup the dipswitches
-    setupDipswitches();
-
-    // get the configuration and address info
-    config = getConfig();
-    address = getAddrress();
+  // get the configuration and address info
+  config = getConfig();
+  address = getAddrress();
 }
 
-void loop()
-{
+void loop() {
+  if (millis() - lastLedUpdate > ledUpdateInterval) {
+    lastLedUpdate = millis();
 
-    if (millis() - lastLedUpdate > ledUpdateInterval) {
-        lastLedUpdate = millis();
-        uint8_t colorSettings = getConfig();
-        RGBWColor outputColor;
-        // outputColor = RGBWColor({ (colorSettings & 0b11) << 14, (colorSettings & 0b1100) << 12, (colorSettings & 0b110000) << 10, (colorSettings & 0b11000000) << 8 });
-        outputColor.r = uint16_t(colorSettings & 0b11) << 14;
-        outputColor.g = uint16_t(colorSettings & 0b1100) << 12;
-        outputColor.b = uint16_t(colorSettings & 0b110000) << 10;
-        outputColor.w = uint16_t(colorSettings & 0b11000000) << 8;
-  
-        // Serial.println("R: " + String(outputColor.r) + "\tG: " + String(outputColor.g) + "\tB: " + String(outputColor.b) + "\tW: " + String(outputColor.w));
+    RGBWColor16 foregroundColor = RGBWColor16(0, 0, 0, 0);
+    uint8_t foregroundColorSettings = getConfig();
+    foregroundColor.r = uint16_t((foregroundColorSettings & 0b11) << 10);
+    foregroundColor.g = uint16_t((foregroundColorSettings & 0b1100) << 8);
+    foregroundColor.b = uint16_t((foregroundColorSettings & 0b110000) << 6);
+    foregroundColor.w = uint16_t((foregroundColorSettings & 0b11000000) << 4);
 
-        setAllLedsTo(RGBWColor({1000,outputColor.g,outputColor.b,outputColor.w}));
+    RGBWColor16 backgroundColor = RGBWColor16(0, 0, 0, 0);
+    uint8_t backgroundColorSettings = getAddrress();
+    backgroundColor.r = uint16_t((backgroundColorSettings & 0b11) << 10);
+    backgroundColor.g = uint16_t((backgroundColorSettings & 0b1100) << 8);
+    backgroundColor.b = uint16_t((backgroundColorSettings & 0b110000) << 6);
+    backgroundColor.w = uint16_t((backgroundColorSettings & 0b11000000) << 4);
 
-        updateLeds();
+    RGBWColor16 outputColors[N_LEDS];
+
+    const float animationDuration = 2000.0;
+    const int animationSize = N_LEDS;
+    float animationDirection =
+        0.2*sin(2 * PI * float(millis()) / (animationDuration * 2.8));
+    Serial.print(animationDirection);
+    for (int i = 0; i < N_LEDS; i++) {
+      float channelOffset =
+          (animationDirection) + float(i) / float(animationSize);
+      if (channelOffset > 1.0) channelOffset -= 1.0;
+      if (channelOffset < 0) channelOffset += 1.0;
+      outputColors[i] =
+          fadeColor(backgroundColor, foregroundColor,
+                    0.5 + 0.5 * sin(2.0 * PI * (0.5 + 0.5 * channelOffset)));
+      setLedTarget(i, outputColors[i]);
     }
+
+    updateLeds();
+    Serial.println();
+  }
 }

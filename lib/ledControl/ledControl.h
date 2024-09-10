@@ -17,6 +17,8 @@ void updateLeds();
 
 RGBWColor16 remapColor(RGBWColor16 color);
 
+RGBWColor16 correctColor(RGBWColor16 color);
+
 void updateLeds();
 
 RGBWColor16 dimColor(RGBWColor16 color, float brightness);
