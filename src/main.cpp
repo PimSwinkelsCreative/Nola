@@ -61,17 +61,27 @@ void loop() {
     const float animationDuration = 2000.0;
     const int animationSize = N_LEDS;
     float animationDirection =
-        0.2*sin(2 * PI * float(millis()) / (animationDuration * 2.8));
+        10*sin(2 * PI * float(millis()) / (animationDuration * 2.8));
     Serial.print(animationDirection);
     for (int i = 0; i < N_LEDS; i++) {
       float channelOffset =
           (animationDirection) + float(i) / float(animationSize);
       if (channelOffset > 1.0) channelOffset -= 1.0;
       if (channelOffset < 0) channelOffset += 1.0;
+
+      float fadeProgress =
+          1 + cos(2.0 * PI * (0.5 + 0.5 * channelOffset));
       outputColors[i] =
-          fadeColor(backgroundColor, foregroundColor,
-                    0.5 + 0.5 * sin(2.0 * PI * (0.5 + 0.5 * channelOffset)));
+          fadeColor(backgroundColor, foregroundColor, fadeProgress);
       setLedTarget(i, outputColors[i]);
+
+      if (i == 0) {
+        Serial.print("\tfadeProgress: " + String(fadeProgress));
+        Serial.print("\tR: " + String(outputColors[i].r) +
+                     "G: " + String(outputColors[i].g) +
+                     "B: " + String(outputColors[i].b) +
+                     "W: " + String(outputColors[i].w));
+      }
     }
 
     updateLeds();
