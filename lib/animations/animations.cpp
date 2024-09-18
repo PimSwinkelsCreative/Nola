@@ -1,67 +1,64 @@
 #include "animations.h"
 
+//=========GENERAL============//
 
+LightDot* myLightDots[N_LEDS];
+uint8_t nLightDots = 0;
 
-
-
-
-Raindrop* myRaindrops[N_LEDS];
-uint8_t nRaindrops = 0;
-
-void updateRaindrops()
+void updateLightDots()
 {
-    for (int i = 0; i < nRaindrops; i++) {
-        if (myRaindrops[i]->update() == false) {
-            deleteRaindrop(i);
+    for (int i = 0; i < nLightDots; i++) {
+        if (myLightDots[i]->update() == false) {
+            deleteLightDot(i);
         }
     }
 }
 
-void startNewRaindrop(uint8_t channel, uint16_t duration, RGBWColor16 color)
+void startNewLightDot(uint8_t channel, uint16_t duration, RGBWColor16 color, float fadeInTime, float fadeOutTime)
 {
-    if (nRaindrops >= N_LEDS) {
-        Serial.println("ERROR: more raindrops than lights!");
+    if (nLightDots >= N_LEDS) {
+        Serial.println("ERROR: more LightDots than lights!");
         return;
     }
-    myRaindrops[nRaindrops] = new Raindrop(channel, duration, color);
-    Serial.println("created a new raindrop! with index: " + String(nRaindrops));
-    nRaindrops++;
-    Serial.println("Number of raindrops: " + String(nRaindrops));
+    myLightDots[nLightDots] = new LightDot(channel, duration, color, fadeInTime, fadeOutTime);
+    Serial.println("created a new LightDot! with index: " + String(nLightDots));
+    nLightDots++;
+    Serial.println("Number of LightDots: " + String(nLightDots));
 }
 
-void deleteRaindrop(uint8_t index)
+void deleteLightDot(uint8_t index)
 {
-    if (index < 0 || index >= nRaindrops) {
-        Serial.println("ERROR: cannot delete raindrop. Index out of range! index: " + String(index));
+    if (index < 0 || index >= nLightDots) {
+        Serial.println("ERROR: cannot delete LightDot. Index out of range! index: " + String(index));
         return;
     }
 
-    Serial.println("deleting raindrop with index: " + String(index));
-    myRaindrops[index]->shutDown();
+    Serial.println("deleting LightDot with index: " + String(index));
+    myLightDots[index]->shutDown();
 
     // shift all the remaining instances to the lowest indexes:
-    for (int i = index; i < nRaindrops - 1; i++) {
-        // myRaindrops[i] = myRaindrops[i + 1];
-        memcpy(myRaindrops[i],myRaindrops[i+1],sizeof(Raindrop));
+    for (int i = index; i < nLightDots - 1; i++) {
+        // myLightDots[i] = myLightDots[i + 1];
+        memcpy(myLightDots[i], myLightDots[i + 1], sizeof(LightDot));
     }
-    // lower the amoiunt of raindrops by 1
-    nRaindrops--;
-    // delete the object of the last raindrop:
-    delete myRaindrops[nRaindrops];
-    myRaindrops[nRaindrops] = NULL;
+    // lower the amoiunt of LightDots by 1
+    nLightDots--;
+    // delete the object of the last LightDot:
+    delete myLightDots[nLightDots];
+    myLightDots[nLightDots] = NULL;
 }
 
-Raindrop::Raindrop(uint8_t _channel, uint16_t _duration, RGBWColor16 _color)
+LightDot::LightDot(uint8_t _channel, uint16_t _duration, RGBWColor16 _color, float _fadeInTime, float _fadeOutTime)
 {
     startTime = millis();
     duration = _duration;
     channel = _channel;
     color = _color;
-    fadeInTime = float(duration) * 0.1;
-    fadeOutTime = float(duration) * 0.5;
+    fadeInTime = _fadeInTime;
+    fadeOutTime = _fadeOutTime;
 }
 
-bool Raindrop::update()
+bool LightDot::update()
 {
     uint16_t animationTime = millis() - startTime;
     if (animationTime < duration) {
@@ -72,12 +69,16 @@ bool Raindrop::update()
         } else {
             setLedTarget(channel, color);
         }
-        return true; // raindrop needs to stay in memory
+        return true; // LightDot needs to stay in memory
     }
-    return false; // raindrop needs to be deleted
+    return false; // LightDot needs to be deleted
 }
 
-void Raindrop::shutDown()
+void LightDot::shutDown()
 {
     setLedTarget(channel, RGBWColor16(0, 0, 0, 0));
 }
+
+//============JUMPING LIGHT==========//
+
+//==============RAINDROPS========///

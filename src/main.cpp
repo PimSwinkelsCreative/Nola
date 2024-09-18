@@ -80,7 +80,24 @@ void loop()
             break;
         case 3:
             // JUMPING LIGHTS
+            if (millis() - lastAnimationUpdate >= animationUpdateInterval) {
+                lastAnimationUpdate = millis();
+                if (jumpingLightQueues[address][animationCounter] != 0) {
+                    if (jumpingLightQueues[address][animationCounter] == 1) {
+                        for (int i = 0; i < N_LEDS; i++) {
+                            startNewLightDot(i, JUMPING_LIGHT_LENGTH, JUMPING_LIGHT_COLOR, JUMPING_LIGHT_LONG_FADE, JUMPING_LIGHT_SHORT_FADE);
+                        }
 
+                    } else if (jumpingLightQueues[address][animationCounter] == -1) {
+                        for (int i = 0; i < N_LEDS; i++) {
+                            startNewLightDot(i, JUMPING_LIGHT_LENGTH, JUMPING_LIGHT_COLOR, JUMPING_LIGHT_SHORT_FADE, JUMPING_LIGHT_LONG_FADE);
+                        }
+                    }
+                }
+                animationCounter++;
+                animationCounter %= JUMPING_LIGHT_ANIMATION_LENGTH;
+            }
+            updateLightDots();
             break;
         case 4:
             // RAIN
@@ -88,13 +105,13 @@ void loop()
                 lastAnimationUpdate = millis();
                 if (animationCounter < RAINDROP_ANIMATION_LENGTH) {
                     if (rainDropQueues[address][animationCounter] > 0) {
-                        startNewRaindrop(rainDropQueues[address][animationCounter] - 1, 1000, RGBWColor16(4095, 4095, 3000, 4095));
+                        startNewLightDot(rainDropQueues[address][animationCounter] - 1, RAINDROP_DROP_LENGTH, RAINDROP_COLOR, RAINDROP_FADE_IN, RAINDROP_FADE_OUT);
                     }
                     animationCounter++;
                 }
-                //animation should not loop
+                // animation should not loop
             }
-            updateRaindrops();
+            updateLightDots();
             break;
         default:
             //"off" state, no lights
