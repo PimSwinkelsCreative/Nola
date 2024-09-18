@@ -3,6 +3,7 @@
 #include "button.h"
 #include "dipswitches.h"
 #include "ledControl.h"
+#include "animations.h"
 
 // timing:
 uint16_t delayTime = 500;
@@ -17,8 +18,11 @@ unsigned long lastLedupdate = 0;
 unsigned int ledUpdateInterval = 20;
 unsigned long lastDipswitchUpdate = 0;
 unsigned int dipswitchUpdateInterval = 100;
+unsigned long lastAnimationUpdate = 0;
+unsigned int animationUpdateInterval = 1000;
 uint8_t currentState = 0;
 uint8_t address = 0;
+uint8_t testcounter = 0;
 
 // button initialization:
 Button button(BUTTON_N, activeLow);
@@ -63,16 +67,26 @@ void loop()
 
         switch (currentState) {
         case 1:
-            setAllLedsTo(RGBWColor16(4095, 0, 0, 0));
+            // SHY LIGHTS
+
             break;
         case 2:
-            setAllLedsTo(RGBWColor16(0, 4095, 0, 0));
+            // ANXIOUS
+
             break;
         case 3:
-            setAllLedsTo(RGBWColor16(0, 0, 4095, 0));
+            // JUMPING LIGHTS
+
             break;
         case 4:
-            setAllLedsTo(RGBWColor16(0, 0, 0, 4095));
+            // RAIN
+            if (millis() - lastAnimationUpdate >= animationUpdateInterval) {
+                lastAnimationUpdate = millis();
+                startNewRaindrop(testcounter,3333,RGBWColor16(0,0,0,1000));
+                testcounter++;
+                testcounter%=N_LEDS;
+            }
+            updateRaindrops();
             break;
         default:
             //"off" state, no lights
