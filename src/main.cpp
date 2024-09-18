@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
+#include "animations.h"
 #include "button.h"
 #include "dipswitches.h"
 #include "ledControl.h"
-#include "animations.h"
 
 // timing:
 uint16_t delayTime = 500;
@@ -21,8 +21,10 @@ unsigned int dipswitchUpdateInterval = 100;
 unsigned long lastAnimationUpdate = 0;
 unsigned int animationUpdateInterval = 1000;
 uint8_t currentState = 0;
+uint8_t prevState = 0;
 uint8_t address = 0;
-uint8_t testcounter = 0;
+uint8_t prevAddress = 0;
+uint8_t animationCounter = 0;
 
 // button initialization:
 Button button(BUTTON_N, activeLow);
@@ -39,10 +41,6 @@ void setup()
     // setup the leds
     setupLeds();
 
-    // setAllLedsTo(RGBWColor16( 65535, 0, 0, 0 ));
-    // updateLeds();
-    // delay(5000);
-
     // setup the dipswitches
     setupDipswitches();
 }
@@ -54,6 +52,12 @@ void loop()
         lastDipswitchUpdate = millis();
         address = getAddress();
         currentState = getConfig();
+
+        // reset the animation if the config is changed
+        if (currentState != prevState) {
+            prevState = currentState;
+            animationCounter = 0;
+        }
     }
 
     // update the leds periodically:
@@ -82,9 +86,13 @@ void loop()
             // RAIN
             if (millis() - lastAnimationUpdate >= animationUpdateInterval) {
                 lastAnimationUpdate = millis();
-                startNewRaindrop(testcounter,3333,RGBWColor16(0,0,0,1000));
-                testcounter++;
-                testcounter%=N_LEDS;
+                if (animationCounter < RAINDROP_ANIMATION_LENGTH) {
+                    if (rainDropQueues[address][animationCounter] > 0) {
+                        startNewRaindrop(rainDropQueues[address][animationCounter] - 1, 1000, RGBWColor16(4095, 4095, 3000, 4095));
+                    }
+                    animationCounter++;
+                }
+                //animation should not loop
             }
             updateRaindrops();
             break;

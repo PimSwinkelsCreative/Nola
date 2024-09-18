@@ -1,5 +1,10 @@
 #include "animations.h"
 
+
+
+
+
+
 Raindrop* myRaindrops[N_LEDS];
 uint8_t nRaindrops = 0;
 
