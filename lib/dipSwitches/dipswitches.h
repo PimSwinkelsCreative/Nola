@@ -5,6 +5,6 @@
 
 void setupDipswitches();
 
-uint8_t getAddrress();
+uint8_t getAddress();
 
 uint8_t getConfig();

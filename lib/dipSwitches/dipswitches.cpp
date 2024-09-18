@@ -17,7 +17,7 @@ void setupDipswitches()
     }
 }
 
-uint8_t getAddrress()
+uint8_t getAddress()
 {
     uint8_t addr = 0;
     for (int i = 0; i < 8; i++) {
