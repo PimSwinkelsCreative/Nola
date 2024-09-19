@@ -5,7 +5,7 @@
 
 // hardware setup:
 #define N_LEDS 6
-#define LED_RESOLUTION 16
+#define LED_RESOLUTION 12
 
 void setupLeds();
 

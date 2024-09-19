@@ -11,12 +11,7 @@ RGBWColor16 leds[N_LEDS];
 // The led array needs to be initialized prior to this object creation
 TLC5947 ledDriver(leds, N_LEDS, LED_SCLK, LED_SIN, LED_LATCH, LED_BLANK);
 
-uint8_t framesPerSecond = 25;
-
-uint8_t currentAnimation = 0;
-
-// the taskhandles for all animations:
-TaskHandle_t updateFadeTask;
+uint16_t maxColorValue;
 
 RGBWColor16 remapColor(RGBWColor16 color)
 {
@@ -25,6 +20,7 @@ RGBWColor16 remapColor(RGBWColor16 color)
 
 void setupLeds()
 {
+    maxColorValue = (1<<LED_RESOLUTION)-1;
     ledDriver.setAllLedsTo(RGBWColor16(0, 0, 0, 0));
     ledDriver.update();
 }
@@ -107,10 +103,10 @@ RGBWColor16 correctColor(RGBWColor16 color)
     blue *= 4095.0;
     white *= 4095.0;
 
-    color.r = (uint16_t)red;
-    color.g = (uint16_t)green;
-    color.b = (uint16_t)blue;
-    color.w = (uint16_t)white;
+    color.r = constrain((uint16_t)red,0,maxColorValue);
+    color.g = constrain((uint16_t)green,0,maxColorValue);
+    color.b = constrain((uint16_t)blue,0,maxColorValue);
+    color.w = constrain((uint16_t)white,0,maxColorValue);
 
     return color;
 }
