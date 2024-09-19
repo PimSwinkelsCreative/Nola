@@ -7,8 +7,13 @@ uint32_t animationStartTime = 0;
 LightDot* myLightDots[N_LEDS];
 uint8_t nLightDots = 0;
 
+unsigned long lastAnimationUpdate = 0;
+unsigned int animationUpdateInterval = 1000;
+uint8_t animationCounter = 0;
+
 void resetAllAnimations() {
   animationStartTime = millis();  // reset the clock
+  animationCounter = 0;
 
   // delete All LightDots
   for (int i = 0; i < nLightDots; i++) {
@@ -166,5 +171,40 @@ void updateShyLight(uint8_t address) {
 }
 
 //============JUMPING LIGHT==========//
+void updateJumpingLights(uint8_t address) {
+  if (millis() - lastAnimationUpdate >= animationUpdateInterval) {
+    lastAnimationUpdate = millis();
+    if (jumpingLightQueues[address][animationCounter] != 0) {
+      if (jumpingLightQueues[address][animationCounter] == 1) {
+        for (int i = 0; i < N_LEDS; i++) {
+          startNewLightDot(i, JUMPING_LIGHT_LENGTH, JUMPING_LIGHT_COLOR,
+                           JUMPING_LIGHT_LONG_FADE, JUMPING_LIGHT_SHORT_FADE);
+        }
 
-//==============RAINDROPS========///
+      } else if (jumpingLightQueues[address][animationCounter] == -1) {
+        for (int i = 0; i < N_LEDS; i++) {
+          startNewLightDot(i, JUMPING_LIGHT_LENGTH, JUMPING_LIGHT_COLOR,
+                           JUMPING_LIGHT_SHORT_FADE, JUMPING_LIGHT_LONG_FADE);
+        }
+      }
+    }
+    animationCounter++;
+    animationCounter %= JUMPING_LIGHT_ANIMATION_LENGTH;
+  }
+  updateLightDots();
+}
+
+//==============RAINDROPS========//
+void updateRaindrops(uint8_t address) {
+  if (millis() - lastAnimationUpdate >= animationUpdateInterval) {
+    lastAnimationUpdate = millis();
+    if (rainDropQueues[address][animationCounter] > 0) {
+      startNewLightDot(rainDropQueues[address][animationCounter] - 1,
+                       RAINDROP_DROP_LENGTH, RAINDROP_COLOR, RAINDROP_FADE_IN,
+                       RAINDROP_FADE_OUT);
+    }
+    animationCounter++;
+    animationCounter %= RAINDROP_ANIMATION_LENGTH;
+  }
+  updateLightDots();
+}
