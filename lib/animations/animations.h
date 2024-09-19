@@ -92,3 +92,26 @@ const uint8_t rainDropQueues[N_NOLAS][RAINDROP_ANIMATION_LENGTH] = {
      0, 0, 5, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0}};
 
 void updateRaindrops(uint8_t address);
+
+//============BREATHING=============//
+
+#define BREATHING_ANIMATION_LENGTH 30
+#define BREATHING_FADE_IN_LENGTH 2000
+#define BREATHING_FADE_OUT_LENGTH 2000
+
+#define BREATHING_BASE_INTENSITY 0.3
+#define BREATHING_PEAK_INTENSITY 0.8
+
+#define BREATHING_COLOR RGBWColor16(4095, 3000, 0, 1000)
+
+const uint8_t breathingQueues[N_NOLAS][BREATHING_ANIMATION_LENGTH] = {
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+void updateBreathingAnimation(uint8_t address);

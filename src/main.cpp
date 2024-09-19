@@ -67,21 +67,16 @@ void loop() {
     switch (currentState) {
       case 1:
         // SHY LIGHTS
-        // updateHeartBeat(RGBWColor16(4000,4000,4000,0),0,40,1);
         updateShyLight(address);
         break;
       case 2:
-        // ANXIOUS
-        // TBD
-        break;
-      case 3:
         // JUMPING LIGHTS
         updateJumpingLights(address);
         break;
-      case 4:
-        // RAIN
-        updateRaindrops(address);
+      case 3:
+        updateBreathingAnimation(address);
         break;
+
       default:
         //"off" state, no lights
         setAllLedsTo(RGBWColor16(0, 0, 0, 0));
