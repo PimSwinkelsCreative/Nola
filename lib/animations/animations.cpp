@@ -218,36 +218,37 @@ void updateBreathingAnimation(uint8_t address) {
                                     BREATHING_PEAK_INTENSITY);
   uint32_t animationTime =
       (millis() - animationStartTime) % (BREATHING_ANIMATION_LENGTH * 1000);
-  if (animationTime - lastAnimationUpdate >= animationUpdateInterval ||
-      lastAnimationUpdate > animationTime) {
-    lastAnimationUpdate = animationTime;
 
-    // determine if there is a fade active atm:
-    uint32_t totalFadeTime =
-        BREATHING_FADE_IN_LENGTH + BREATHING_FADE_OUT_LENGTH;
-    int16_t lastFadeStarted = -1;
-    for (int i = constrain((millis() - totalFadeTime) / 1000, 0,
-                           BREATHING_ANIMATION_LENGTH);
-         i < totalFadeTime / 1000; i++) {
-            Serial.println(i);
-      if (breathingQueues[address][i]) {
-        lastFadeStarted = animationTime;
-      }
+  // determine if there is a fade active atm:
+  uint32_t totalFadeTime = BREATHING_FADE_IN_LENGTH + BREATHING_FADE_OUT_LENGTH;
+  static int32_t lastFadeStarted = -1;
+
+  animationCounter =
+      animationTime / 1000;  // set the animation counter to 1Hz intervals
+
+  if ((lastFadeStarted < 0) && breathingQueues[address][animationCounter] > 0) {
+    lastFadeStarted = animationTime;
+    Serial.println(lastFadeStarted);
+  }
+
+  if (lastFadeStarted >= 0) {
+    if (animationTime - lastFadeStarted < BREATHING_FADE_IN_LENGTH) {
+      // handle the fade in
+      float brightness = float(animationTime - lastFadeStarted) /
+                         float(BREATHING_FADE_IN_LENGTH);
+      setAllLedsTo(fadeColor(baseColor, peakColor, brightness));
+    } else if (animationTime - lastFadeStarted <
+               BREATHING_FADE_IN_LENGTH + BREATHING_FADE_OUT_LENGTH) {
+      // handle the fade out
+      float brightness =
+          float(animationTime - lastFadeStarted - BREATHING_FADE_IN_LENGTH) /
+          float(BREATHING_FADE_OUT_LENGTH);
+      setAllLedsTo(fadeColor(peakColor, baseColor, brightness));
+    } else {
+      lastFadeStarted = -1;
+      setAllLedsTo(baseColor);
     }
-    if (lastFadeStarted >= 0) {
-      if (animationTime - lastFadeStarted < BREATHING_FADE_IN_LENGTH) {
-        // handle the fade in
-        setAllLedsTo(
-            fadeColor(baseColor, peakColor,
-                      float(animationTime) / float(BREATHING_FADE_IN_LENGTH)));
-      } else {
-        // handle the fade out
-        setAllLedsTo(fadeColor(
-            peakColor, baseColor,
-            1.0 - float(animationTime) / float(BREATHING_FADE_IN_LENGTH)));
-      }
-    } else{
-        setAllLedsTo(baseColor);
-    }
+  } else {
+    setAllLedsTo(baseColor);
   }
 }
