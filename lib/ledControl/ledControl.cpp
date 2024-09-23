@@ -9,7 +9,7 @@ RGBWColor16 leds[N_LEDS];
 
 // create the TLC5947 object:
 // The led array needs to be initialized prior to this object creation
-TLC5947 ledDriver(leds, N_LEDS, LED_SCLK, LED_SIN, LED_LATCH, LED_BLANK,10000000,true);
+TLC5947 ledDriver(leds, N_LEDS, LED_SCLK, LED_SIN, LED_LATCH, LED_BLANK, 10000000, false);
 
 uint16_t maxColorValue;
 
@@ -20,7 +20,7 @@ RGBWColor16 remapColor(RGBWColor16 color)
 
 void setupLeds()
 {
-    maxColorValue = (1<<LED_RESOLUTION)-1;
+    maxColorValue = (1 << LED_RESOLUTION) - 1;
     ledDriver.setAllLedsTo(RGBWColor16(0, 0, 0, 0));
     ledDriver.update();
 }
@@ -103,37 +103,10 @@ RGBWColor16 correctColor(RGBWColor16 color)
     blue *= 4095.0;
     white *= 4095.0;
 
-    color.r = constrain((uint16_t)red,0,maxColorValue);
-    color.g = constrain((uint16_t)green,0,maxColorValue);
-    color.b = constrain((uint16_t)blue,0,maxColorValue);
-    color.w = constrain((uint16_t)white,0,maxColorValue);
+    color.r = constrain((uint16_t)red, 0, maxColorValue);
+    color.g = constrain((uint16_t)green, 0, maxColorValue);
+    color.b = constrain((uint16_t)blue, 0, maxColorValue);
+    color.w = constrain((uint16_t)white, 0, maxColorValue);
 
     return color;
-}
-
-void updateTwoColorRotationAnimation(RGBWColor16 foregroundColor, RGBWColor16 backgroundColor, float animationDuration, float rotationAmount)
-{
-    RGBWColor16 outputColors[N_LEDS];
-
-    float animationDirection = 10 * sin(2 * PI * float(millis()) / (animationDuration * 2.8));
-    Serial.print(animationDirection);
-    for (int i = 0; i < N_LEDS; i++) {
-        float channelOffset = (animationDirection) + float(i) / float(N_LEDS);
-        if (channelOffset > 1.0)
-            channelOffset -= 1.0;
-        if (channelOffset < 0)
-            channelOffset += 1.0;
-
-        float fadeProgress = 1 + cos(2.0 * PI * (0.5 + 0.5 * channelOffset));
-        outputColors[i] = fadeColor(backgroundColor, foregroundColor, fadeProgress);
-        setLedTarget(i, outputColors[i]);
-
-#ifdef DEBUG_ANIMATIONS
-        if (i == 0) {
-            Serial.print("\tfadeProgress: " + String(fadeProgress));
-            Serial.print("\tR: " + String(outputColors[i].r) + "G: " + String(outputColors[i].g) + "B: " + String(outputColors[i].b) + "W: " + String(outputColors[i].w));
-            Serial.println();
-        }
-#endif
-    }
 }

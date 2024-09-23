@@ -115,3 +115,10 @@ const uint8_t breathingQueues[N_NOLAS][BREATHING_ANIMATION_LENGTH] = {
      0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
 void updateBreathingAnimation(uint8_t address);
+
+//==============ROTATION===============//
+
+void updateTwoColorRotationAnimation(RGBWColor16 foregroundColor, RGBWColor16 backgroundColor, float animationDuration, float rotationAmount);
+
+
+void updateColorFade(uint16_t fadeTime,  RGBWColor16 colors[],uint8_t nColors);

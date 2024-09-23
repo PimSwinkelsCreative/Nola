@@ -27,4 +27,3 @@ RGBWColor16 fadeColor(RGBWColor16 startColor, RGBWColor16 endColor, float fadePr
 
 RGBWColor16 changeWhiteLevel(RGBWColor16 color, float saturationMultiplier);
 
-void updateTwoColorRotationAnimation(RGBWColor16 foregroundColor, RGBWColor16 backgroundColor, float animationDuration, float rotationAmount);
