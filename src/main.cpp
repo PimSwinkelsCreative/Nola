@@ -7,7 +7,6 @@
 
 // timing:
 uint16_t delayTime = 500;
-
 uint16_t brightness = 0;
 
 unsigned long lastLedUpdate = 0;
@@ -68,26 +67,26 @@ void loop()
         lastLedUpdate = millis();
 
         switch (currentState) {
-        case 1:
+        case 1<<0:
             // SHY LIGHTS
             updateShyLight(address);
             break;
-        case 2:
+        case 1<<1:
             // JUMPING LIGHTS
             updateJumpingLights(address);
             break;
-        case 3:
+        case 1<<2:
             updateBreathingAnimation(address);
             break;
-        case 4:
+        case 1<<3:
             updateTwoColorRotationAnimation(RGBWColor16(4000, 0, 0, 1000), RGBWColor16(0, 3000, 3000, 0), 3000, 3);
             break;
-        case 5: {
+        case 1<<4: {
           //FULL RGBW fade
             RGBWColor16 fadeColors[] = { RGBWColor16(4000, 0, 0, 0), RGBWColor16(0, 4000, 0, 0), RGBWColor16(0, 0, 4000, 0), RGBWColor16(0, 0, 0, 4000) };
             updateColorFade(3000, fadeColors, sizeof(fadeColors) / sizeof(RGBWColor16));
         } break;
-        case 6: {
+        case 1<<5: {
           //MORE AESTHETIC FADE
             RGBWColor16 fadeColors[] = { RGBWColor16(4000, 3000, 0, 1000), RGBWColor16(0, 4000, 3000, 1000), RGBWColor16(3000, 2000, 0, 4000) };
             updateColorFade(5000, fadeColors, sizeof(fadeColors) / sizeof(RGBWColor16));
