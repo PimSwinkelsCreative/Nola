@@ -15,7 +15,7 @@ unsigned long fadeTime = 1000000;
 
 // timing and stating
 unsigned long lastLedupdate = 0;
-unsigned int ledUpdateInterval = 20;
+unsigned int ledUpdateInterval = 10;
 unsigned long lastDipswitchUpdate = 0;
 unsigned int dipswitchUpdateInterval = 100;
 
