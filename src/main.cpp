@@ -6,6 +6,15 @@
 #include "ledControl.h"
 #include "sensorControl.h"
 
+// interactivity & fading
+const uint16_t fadeInTime = 5000;
+const uint16_t activeTime = 10000;
+const uint16_t fadeOutTime = 5000;
+const uint16_t minFadeBetweenTriggers = 2000;
+const uint16_t totalFadeTime =
+    fadeInTime + activeTime + fadeOutTime + minFadeBetweenTriggers;
+uint32_t lastFadeStarted = 0;
+
 // timing:
 uint16_t delayTime = 500;
 uint16_t brightness = 0;
@@ -57,14 +66,13 @@ void setup() {
 
 void loop() {
   if (movementFlag) {
-    //TODO: FIX RE TRIGGERING WHILE FADE IS BUSY!!!!!
-
-
-
-    Serial.print("movement detected\t");
-    Serial.println(millis());
-    startFadeCurve(5000, 10000, 5000);
-    resetAllAnimations();
+    if (millis() - lastFadeStarted > totalFadeTime) {
+      Serial.print("movement detected\t");
+      Serial.println(millis());
+      startFadeCurve(fadeInTime, activeTime, fadeInTime);
+      resetAllAnimations();
+      lastFadeStarted = millis();
+    }
     movementFlag = false;
   }
 
