@@ -34,6 +34,10 @@ class LightDot {
   void shutDown();
 };
 
+void startFadeCurve(uint16_t inTime, uint16_t onTime, uint16_t outTime);
+
+uint16_t getAnimationBrightness();
+
 //======================SHY LIGHTS==================//
 
 #define HEARTBEAT_BPM 30
@@ -118,7 +122,9 @@ void updateBreathingAnimation(uint8_t address);
 
 //==============ROTATION===============//
 
-void updateTwoColorRotationAnimation(RGBWColor16 foregroundColor, RGBWColor16 backgroundColor, float animationDuration, float rotationAmount);
+void updateTwoColorRotationAnimation(RGBWColor16 foregroundColor,
+                                     RGBWColor16 backgroundColor,
+                                     float animationDuration,
+                                     float rotationAmount);
 
-
-void updateColorFade(uint16_t fadeTime,  RGBWColor16 colors[],uint8_t nColors);
+void updateColorFade(uint16_t fadeTime, RGBWColor16 colors[], uint8_t nColors);
